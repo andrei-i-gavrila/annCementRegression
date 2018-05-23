@@ -10,7 +10,7 @@ class InputProcessor:
 
     def read(self):
         with open(self.filename, 'r') as f:
-            lines = map(str.strip, f.readlines())
+            lines = map(str.strip, f.readlines()[:11])
             lines = map(lambda s: list(map(float, s.split(','))), lines)
             return np.array(list(map(lambda s: np.array(s), lines)))
 

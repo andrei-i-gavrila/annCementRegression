@@ -1,7 +1,7 @@
 from itertools import tee
 
 import numpy as np
-from numpy import exp, random, dot
+from numpy import random, dot
 
 from input_processor import InputProcessor
 
@@ -13,17 +13,17 @@ def pairwise(*iterable):
 
 
 def sigmoid(x):
-    return 2 / (1 + exp(-x)) - 1
+    return np.tanh(x)
 
 
 def sigmoid_derivative(x):
-    return 2 * x * (1 - x)
+    return 1.0 - np.tanh(x) ** 2
 
 
 class NeuralNetwork:
     def __init__(self, input_nodes, hidden_layers, output_nodes):
         # random.seed(1)
-        self.weights = [2 * random.random((a, b)) - 1 for a, b in pairwise(input_nodes, *hidden_layers, output_nodes)]
+        self.weights = [random.random((a, b)) for a, b in pairwise(input_nodes, *hidden_layers, output_nodes)]
 
     def predict(self, input_values):
         outputs = [input_values]
@@ -36,7 +36,7 @@ class NeuralNetwork:
         return outputs
 
     def train(self, train_input, desired_output):
-        for _ in range(1):
+        for _ in range(5):
             outputs = self.predict(train_input)
             size = len(self.weights)
             adjustments = [0] * size
@@ -48,12 +48,12 @@ class NeuralNetwork:
                 error = dot(delta, self.weights[i - 1].T)
 
             for i in range(size - 1, 0, -1):
-                self.weights[i] += adjustments[i]
+                self.weights[i] += adjustments[i] * .1
 
 
 if __name__ == "__main__":
-    random.seed(2)
-    neural_network = NeuralNetwork(7, [5,5,5], 3)
+    random.seed(1)
+    neural_network = NeuralNetwork(7, [8, 9], 3)
 
     input_processor = InputProcessor('data.in')
 
@@ -71,3 +71,5 @@ if __name__ == "__main__":
         errors.append(np.sum(np.abs(predicted - result) / predicted))
 
     print(np.average(errors))
+
+# https://rolisz.ro/2013/04/18/neural-networks-in-python/
